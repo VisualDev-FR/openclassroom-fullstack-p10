@@ -48,6 +48,13 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
+      - name: SonarQube Scan Back
+        uses: sonarsource/sonarcloud-github-action@master
+        with:
+          projectBaseDir: back
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   deploy-docker-images:
     runs-on: ubuntu-latest
     needs: build-and-test
