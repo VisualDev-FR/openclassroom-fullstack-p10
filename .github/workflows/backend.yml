@@ -30,7 +30,7 @@ jobs:
         working-directory: back
         run: mvn clean verify --batch-mode --update-snapshots
 
-      - name: SonarQube scan
+      - name: SonarQube Scan Back
         uses: SonarSource/sonarqube-scan-action@v5.1.0
         with:
           projectBaseDir: back
@@ -39,7 +39,7 @@ jobs:
 
   publish-docker-images:
     runs-on: ubuntu-latest
-    needs: sonarqube-scan
+    needs: build-and-test
     steps:
 
       - name: Check out repository code
