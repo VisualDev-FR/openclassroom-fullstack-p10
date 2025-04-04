@@ -31,8 +31,11 @@ jobs:
         run: mvn clean verify --batch-mode --update-snapshots
 
       - name: SonarQube Scan Back
-        working-directory: back
-        run: mvn verify sonar:sonar -Dsonar.login=${{ secrets.SONAR_TOKEN_BACK }}
+        uses: SonarSource/sonarcloud-github-action@v5.0.0
+        with:
+          projectBaseDir: back
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACK }}
 
   publish-docker-images:
     runs-on: ubuntu-latest
