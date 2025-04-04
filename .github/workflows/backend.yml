@@ -27,6 +27,7 @@ jobs:
           cache: maven
 
       - name: test backend
+        working-directory: .
         run: mvn --batch-mode --update-snapshots clean verify
 
   sonarqube-scan:
