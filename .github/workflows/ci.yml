@@ -41,10 +41,19 @@ jobs:
         working-directory: ./front
         run: npm install && npm run test -- --code-coverage --browsers=ChromeHeadless --watch=false
 
-      # - name: SonarCloud Scan
-      #   uses: SonarSource/sonarcloud-github-action@master
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: SonarQube Scan Front
+        uses: sonarsource/sonarcloud-github-action@master
+        with:
+          projectBaseDir: front
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONT }}
+
+      - name: SonarQube Scan Back
+        uses: sonarsource/sonarcloud-github-action@master
+        with:
+          projectBaseDir: back
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACK }}
 
   deploy-docker-images:
     runs-on: ubuntu-latest
