@@ -15,8 +15,6 @@ jobs:
 
       - name: Check out repository code
         uses: actions/checkout@v4
-        with:
-          path: front
 
       - name: setup frontend
         uses: actions/setup-node@v4
