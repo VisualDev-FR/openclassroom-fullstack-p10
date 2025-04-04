@@ -16,19 +16,7 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
         with:
-          path: ${{ github.workspace }}
-
-      - name: setup backend
-        uses: actions/setup-java@v4
-        with:
-          java-version: '11'
-          distribution: 'temurin'
-          architecture: x64
-          cache: maven
-
-      - name: test backend
-        working-directory: ./back
-        run: mvn --batch-mode --update-snapshots clean verify
+          path: front
 
       - name: setup frontend
         uses: actions/setup-node@v4
@@ -47,13 +35,6 @@ jobs:
           projectBaseDir: front
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONT }}
-
-      - name: SonarQube Scan Back
-        uses: sonarsource/sonarcloud-github-action@master
-        with:
-          projectBaseDir: back
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACK }}
 
   deploy-docker-images:
     runs-on: ubuntu-latest
@@ -77,10 +58,3 @@ jobs:
           context: front
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/bobapp-front:latest
-
-      - name: Build and push back-end image
-        uses: docker/build-push-action@v6
-        with:
-          context: back
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bobapp-back:latest
