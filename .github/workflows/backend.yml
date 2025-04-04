@@ -15,8 +15,8 @@ jobs:
 
       - name: Check out repository code
         uses: actions/checkout@v4
-        with:
-          path: back
+        # with:
+        #   path: ${{ github.workspace }}
 
       - name: setup backend
         uses: actions/setup-java@v4
@@ -27,15 +27,15 @@ jobs:
           cache: maven
 
       - name: test backend
-        working-directory: .
-        run: mvn --batch-mode --update-snapshots clean verify
+        working-directory: back
+        run: mvn clean verify --batch-mode --update-snapshots
 
   sonarqube-scan:
     runs-on: ubuntu-latest
     needs: build-and-test
     steps:
       - name: SonarQube Scan Back
-        uses: sonarsource/sonarcloud-github-action@master
+        uses: SonarSource/sonarqube-scan-action@v5.1.0
         with:
           projectBaseDir: back
         env:
