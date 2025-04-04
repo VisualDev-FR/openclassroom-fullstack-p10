@@ -16,7 +16,7 @@
 	<properties>
 		<java.version>11</java.version>
 		<sonar.organization>visualdev-fr</sonar.organization>
-		<sonar.projectKey>oc-bobapp-back</sonar.projectKey>
+		<sonar.projectKey>visualdev-fr_oc-bobapp-back</sonar.projectKey>
 		<sonar.projectName>oc-bobapp-back</sonar.projectName>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
