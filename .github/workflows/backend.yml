@@ -1,5 +1,5 @@
-name: Test & Deploy BobApp
-run-name: ${{ github.actor }} is building and testing the back-end
+name: Test & Deploy BobApp - Back
+run-name: build, test, scan, and publish the backend
 
 on:
   push:
