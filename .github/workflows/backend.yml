@@ -1,0 +1,87 @@
+name: Test & Deploy BobApp - Back
+run-name: build, test, scan, and publish the backend
+
+on:
+  push:
+    branches:
+    - 'main'
+  workflow_dispatch:
+
+jobs:
+
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # clone the entire repository, to give blame infos to sonar
+
+      - name: setup backend
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          architecture: x64
+          cache: maven
+
+      - name: test backend
+        working-directory: back
+        run: mvn clean verify --batch-mode --update-snapshots
+
+      - name: Convert jacoco report to cobertura
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.4.5
+        with:
+          reports: 'back/target/site/jacoco/jacoco.xml'
+          targetdir: 'back/target/site/jacoco'
+          reporttypes: 'Cobertura'
+          
+      - name: Create code coverage Summary
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        id: coverage-report-backend
+        with:
+          filename: back/target/site/jacoco/Cobertura.xml
+          badge: true
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: true
+          indicators: true
+          output: both
+          thresholds: "80 100"
+
+      - name: Add coverage report in the action summary
+        run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
+
+      - name: upload coverage tests report
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: back/target/site/jacoco
+
+      - name: SonarQube Scan
+        run: cd back && mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:5.1.0.4751:sonar
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACK }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+  publish-docker-images:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    steps:
+
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push back-end image
+        uses: docker/build-push-action@v6
+        with:
+          context: back
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bobapp-back:latest
